@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import uvicorn
 
 # Import the RAG function you just built!
-from rag_evaluator import evaluate_with_rag
+from Backend.rag_evaluator import evaluate_with_rag
 
 # Initialize the API
 app = FastAPI(title="IELTS RAG Evaluator API")
