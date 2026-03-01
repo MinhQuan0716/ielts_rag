@@ -14,7 +14,10 @@ app = FastAPI(title="IELTS RAG Evaluator API")
 # This allows your React frontend to talk to this FastAPI backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace "*" with your actual frontend URL
+    allow_origins=[
+        "http://localhost:5173",  # Keeps local testing working
+        "https://ielts-rag.vercel.app"  # Your live website!
+    ],# In production, replace "*" with your actual frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
