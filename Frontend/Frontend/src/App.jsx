@@ -34,7 +34,7 @@ function App() {
     try {
       // This sends the essay to your FastAPI backend!
       const response = await fetch(
-        "https://elts-ai-backend.onrender.com/api/evaluate",
+        "https://ielts-ai-backend.onrender.com/api/evaluate",
         {
           method: "POST",
           headers: {
