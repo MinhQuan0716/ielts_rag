@@ -1,0 +1,37 @@
+# ----------------------------------
+# 1. Secrets & Environments (CRITICAL)
+# ----------------------------------
+.env
+.venv/
+venv/
+env/
+
+# ----------------------------------
+# 2. Data & Vector Database
+# (Too large for GitHub, keep local)
+# ----------------------------------
+Data/raw/
+Data/processed/
+Data/vector_db/
+*.csv
+
+# ----------------------------------
+# 3. Frontend & Node.js
+# ----------------------------------
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.eslintcache
+
+# ----------------------------------
+# 4. Python Caches
+# ----------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ----------------------------------
+# 5. OS & IDE Hidden Files
+# ----------------------------------
+.DS_Store
+.idea/
+.vscode/
