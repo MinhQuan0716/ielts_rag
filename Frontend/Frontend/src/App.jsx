@@ -33,16 +33,19 @@ function App() {
 
     try {
       // This sends the essay to your FastAPI backend!
-      const response = await fetch("http://127.0.0.1:8000/api/evaluate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://elts-ai-backend.onrender.com/api/evaluate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            question_text: currentPrompt, // Sending the prompt
+            essay_text: essay, // Sending the essay
+          }),
         },
-        body: JSON.stringify({
-          question_text: currentPrompt, // Sending the prompt
-          essay_text: essay, // Sending the essay
-        }),
-      });
+      );
 
       const data = await response.json();
 
