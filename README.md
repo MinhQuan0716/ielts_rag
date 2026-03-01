@@ -53,7 +53,7 @@ IELTS_RAG/
 ├── .env                       # Secret API keys (Git-ignored)
 ├── .gitignore                 # Security rules for Git
 └── requirements.txt           # Python backend dependencies
-
+```
 ---
 
 ## 🚀 Local Setup Instructions
@@ -63,6 +63,8 @@ To run this project locally, you will need **Python 3.12+** and **Node.js** inst
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/ielts-ai-evaluator.git
+```
+```bash
 cd ielts-ai-evaluator
 ```
 
