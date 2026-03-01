@@ -1,5 +1,6 @@
 # Backend/rag_evaluator.py
 import os
+import cohere
 import pandas as pd
 import chromadb
 from google import genai
@@ -9,13 +10,14 @@ from dotenv import load_dotenv
 load_dotenv()
 client = genai.Client()
 
-# Connect to the ChromaDB we just built
+# Connect to the ChromaDB
 db_path = os.path.join(os.path.dirname(__file__), '../Data/vector_db')
 chroma_client = chromadb.PersistentClient(path=db_path)
 
-# Retrieve our specific collection
+# Retrieve the specific collection
 collection = chroma_client.get_collection(name="ielts_high_scores")
-
+# Initialize the Cohere Client
+cohere_client = cohere.Client(os.getenv("COHERE_API_KEY"))
 
 def evaluate_with_rag(user_essay,question_text):
     """Retrieves context from ChromaDB and evaluates the essay."""
@@ -24,25 +26,41 @@ def evaluate_with_rag(user_essay,question_text):
     # Query the database for the 2 most similar essays
     results = collection.query(
         query_texts=[question_text],
-        n_results=2
+        n_results=10
     )
+    # Extract BOTH the text and the metadata from the top 10 results
+    candidate_essays = results['documents'][0]
+    candidate_metadata = results['metadatas'][0]
 
-    # 2. Extract the data and build our "Context" string
+    # 2. THE FILTER (Cohere Re-ranker)
+    # We ask the smart model to re-order those 10 essays based on
+    # how perfectly they match the assignment prompt.
+    # ---------------------------------------------------------
+    print("2. Re-ranking candidates to find the absolute best 2...")
+    reranked_response = cohere_client.rerank(
+        model="rerank-english-v3.0",
+        query=question_text,  # The user's assignment prompt
+        documents=candidate_essays,  # The 10 essays we just found
+        top_n=2  # We only want the top 2 survivors
+    )
+    # 3. Extract the data and build our "Context" string
     context_string = ""
-    documents = results['documents'][0]
-    metadatas = results['metadatas'][0]
+    for idx, hit in enumerate(reranked_response.results):
+        # hit.index tells us which of the original 10 essays won (e.g., essay #4)
+        original_index = hit.index
 
-    for i in range(len(documents)):
-        score = metadatas[i]['overall_score']
-        comment = metadatas[i]['examiner_comment']
-        text = documents[i]
+        # Grab the text, score, and comment using that winning index
+        best_essay_text = candidate_essays[original_index]
+        score = candidate_metadata[original_index]['overall_score']
+        comment = candidate_metadata[original_index]['examiner_comment']
 
-        context_string += f"\n--- Reference Essay {i + 1} (Human Score: {score}) ---\n"
-        context_string += f"Text: {text}\n"
+        # Build the perfectly formatted context string
+        context_string += f"\n--- Gold Standard Reference {idx + 1} (Human Score: {score}) ---\n"
+        context_string += f"Text: {best_essay_text}\n"
         context_string += f"Examiner Justification: {comment}\n"
 
     print("2. Constructing the RAG prompt...")
-    # 3. Build the master prompt
+    # 4. Build the master prompt
     system_prompt = f"""
     You are a highly experienced, strict IELTS Writing Task 2 examiner with over 20 years of official marking experience.
     You are NOT a writing coach. You do NOT reward effort. You ONLY reward demonstrated performance.
@@ -185,7 +203,7 @@ def evaluate_with_rag(user_essay,question_text):
     """
 
     print("3. Sending to Gemini for evaluation...")
-    # 4. Send to the AI
+    # 5. Send to the AI
     try:
         response = client.models.generate_content(
             model='gemini-2.5-flash',
