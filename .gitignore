@@ -10,10 +10,6 @@ env/
 # 2. Data & Vector Database
 # (Too large for GitHub, keep local)
 # ----------------------------------
-Data/raw/
-Data/processed/
-Data/vector_db/
-*.csv
 
 # ----------------------------------
 # 3. Frontend & Node.js
