@@ -62,7 +62,7 @@ To run this project locally, you will need **Python 3.12+** and **Node.js** inst
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/ielts-ai-evaluator.git
+git clone https://github.com/MinhQuan0716/ielts-ai-evaluator.git
 ```
 ```bash
 cd ielts-ai-evaluator
